@@ -15,9 +15,47 @@ contract ResolverKeeper {
     address public owner;
     address SmartPiggies;
     address OracleKeeper;
-    
+
     constructor() {
         owner = msg.sender;
+    }
+
+    struct Request {
+        address requester;
+        address funder;
+        uint256 tokenId;
+        uint8 requestType;
+    }
+
+    constructor(address _SmartPiggies, address _okeeper)
+        public
+    {
+        SmartPiggies = _SmartPiggies;
+        OracleKeeper = _okeeper;
+        owner = msg.sender;
+    }
+
+    function register()
+     public
+     returns (bool)
+    {
+      require(msg.sender == SmartPiggies, "Caller is not SmartPiggies.");
+      return true;
+    }
+
+    function fetchData()
+      public
+      returns (bool)
+    {
+        require(msg.sender == SmartPiggies, "Caller is not SmartPiggies.");
+        return true;
+    }
+
+    function getPriceCallback()
+      public
+      returns (bool)
+    {
+      return true;
     }
 
     function kill()
