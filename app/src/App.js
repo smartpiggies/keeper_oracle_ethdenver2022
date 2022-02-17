@@ -1,11 +1,15 @@
 import { useState } from 'react';
 import { ethers } from 'ethers';
-import { Button, Input } from 'semantic-ui-react';
+import {
+  Button,
+  Container,
+  Grid,
+  Header,
+  Input } from 'semantic-ui-react';
 
 import abi from './contracts/abi/ResolverKeeper.json';
 import bytecode from './contracts/bytecode/ResolverKeeper.json';
-import logo from './logo.svg';
-import './App.css';
+
 let provider;
 let signer;
 let factory;
@@ -21,7 +25,7 @@ async function init() {
 
 init();
 
-function App() {
+const  App = () => {
   const [inputAsset, setInputAsset] = useState('');
 
   const deploy = async () => {
@@ -31,22 +35,27 @@ function App() {
   }
 
   return (
-    <div className="App">
-      <header className="App-header">
+    <Container style={{ marginTop: '3em', marginLeft: '30%' }}>
+      <Header as='h1'>Oracle Creator</Header>
+      <Grid columns={3} stackable>
+        <Grid.Column>
+          <Header as='h3'>Deploy</Header>
 
-      <Input
-        size='large'
-        placeholder='Asset...'
-        value={inputAsset}
-        onChange={e => setInputAsset(e.target.value)}
-      />
-      <Button
-        onClick={() => deploy()}
-      >
-        Deploy
-      </Button>
-      </header>
-    </div>
+          <Input
+            size='large'
+            placeholder='Asset...'
+            value={inputAsset}
+            onChange={e => setInputAsset(e.target.value)}
+          />
+          <br></br>
+          <Button
+            onClick={() => deploy()}
+          >
+            Deploy
+          </Button>
+        </Grid.Column>
+      </Grid>
+    </Container>
   );
 }
 
