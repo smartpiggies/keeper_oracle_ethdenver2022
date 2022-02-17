@@ -3,7 +3,7 @@
  *  Implement a chainlink keeper design pattern into the SmartPiggies
  *  bi-lateral risk transfer instrument platform.
  *
- *  This Oracle Proxy will by a resolver when a new piggy is created.
+ *  This Oracle Proxy will register a price callback when a new piggy is created.
  *  The proxy will keep track of all requested callbacks,
  *  during the checkUpkeep phase, requests with met expiry conditions
  *  will be forwarded to the performUpkeep phase to retrieve a price
