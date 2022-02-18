@@ -20,4 +20,4 @@ If the price resolvers use a Chainlink keeper to schedule a future callback to r
 In the above diagram the SmartPiggies smart contract will register with a resolver. This resolver with then register a keeper request with the proxy. The keeper network will check this proxy to determine if there is any work that needs to be executed, i.e. a price that needs to be resolved. If any piggies have recently expired, the keeper will execute the price resolution functionality in the proxy, which will then return the price to the SmartPiggies contract for settlement.
 
 *Video Demo*
-[Video](https://vimeo.com/679048334)
+[Here](https://vimeo.com/679048334)
