@@ -8,13 +8,15 @@ import {
   Input,
   Segment } from 'semantic-ui-react';
 
-import abi from './contracts/abi/ResolverKeeper.json';
-import bytecode from './contracts/bytecode/ResolverKeeper.json';
+import resolverABI from './contracts/abi/ResolverKeeper.json';
+import oracleABI from './contracts/abi/OracleKeeper.json';
+import resolverBytecode from './contracts/bytecode/ResolverKeeper.json';
+import oracleBytecode from './contracts/bytecode/OracleKeeper.json';
+import { ORACLE_ADDRESS, SMARTPIGGIES } from './constants/constants';
 
 let provider;
 let signer;
 let factory;
-let contract;
 
 async function init() {
     provider = new ethers.providers.Web3Provider(window.ethereum, "any");
@@ -29,45 +31,76 @@ init();
 const  App = () => {
   const [inputAsset, setInputAsset] = useState('');
   const [resolver, setResolver] = useState('');
-  const [onChainAddress, setonChainAddress] = useState('');
+  const [oracle, setOracle] = useState('');
+  const [price, setPrice] = useState('');
+  const [tx, setTx] = useState('');
+  const [txFull, setTxFull] = useState('');
+  const [onChainAddress, setOnChainAddress] = useState('');
   const [resolverAddress, setResolverAddress] = useState('');
 
+  const trimTx = (hash) => {
+    let trim = `${hash.slice(0,5)}...${hash.slice(-4)}`
+    return trim;
+  }
+
   const deploy = async () => {
-    factory = new ethers.ContractFactory(abi, bytecode, signer);
-    //contract = await factory.deploy();
-    setResolver(await factory.deploy());
-    setResolverAddress(resolver.address);
-    //console.log(contract.address);
-    console.log(resolver.address);
+    factory = new ethers.ContractFactory(resolverABI, resolverBytecode, signer);
+    let contract = await factory.deploy(SMARTPIGGIES, ORACLE_ADDRESS, 1000000);
+    setResolver(contract);
+    setResolverAddress(contract.address);
   }
 
   const register = async () => {
-
-    console.log();
+    setOracle(new ethers.Contract(ORACLE_ADDRESS, oracleABI, signer));
+    let tx = await oracle.updateResolver(resolver.address, inputAsset);
+    setTx(trimTx(tx.hash));
+    setTxFull(tx.hash);
   }
 
   const setLookup = async () => {
-    
-    console.log();
+    setOracle(new ethers.Contract(ORACLE_ADDRESS, oracleABI, signer));
+    let tx = await oracle.setLookup(inputAsset, onChainAddress);
+    setTx(trimTx(tx.hash));
+    setTxFull(tx.hash);
   }
 
+  const checkPrice = () => {
+    setOracle(new ethers.Contract(ORACLE_ADDRESS, oracleABI, signer));
+    oracle.getLatestPrice(inputAsset)
+    .then(p => {
+      setPrice(`
+        ${p.toString().slice(0,-8)}.${p.div('1000000').toString().slice(-2)}
+        `)
+    });
+  }
+console.log(txFull)
   return (
     <Container style={{ marginTop: '3em', marginLeft: '30%' }}>
       <Header as='h1'>Oracle Creator</Header>
+      {(tx == '') ?
+        null :
+        <a
+          target='_blank'
+          href={`https://kovan.etherscan.io/tx/${txFull}`}
+        >
+          <Header as='h5'>{tx}</Header>
+        </a>
+      }
       <Grid columns={3} stackable>
         <Grid.Column>
           <Header as='h3'>Deploy Resolver</Header>
 
           <Button
-            onClick={() => deploy()}
+            onClick={deploy}
           >
             Deploy
           </Button>
 
           <Segment>
-          {(resolverAddress == '') ?
-            <Header as='h3'>{resolverAddress}</Header> :
-            null}
+            {(resolverAddress == '') ?
+              null:
+              <Header as='h5'>{resolverAddress}</Header>
+            }
           </Segment>
 
           <br></br>
@@ -80,7 +113,7 @@ const  App = () => {
           />
           <br></br>
           <Button
-            onClick={() => deploy()}
+            onClick={register}
           >
             Register
           </Button>
@@ -98,15 +131,30 @@ const  App = () => {
           <Input
             placeholder='Chainlink Address'
             value={onChainAddress}
-            onChange={e => setonChainAddress(e.target.value)}
+            onChange={e => setOnChainAddress(e.target.value)}
           />
           <br></br>
           <Button
-            onClick={() => deploy()}
+            onClick={setLookup}
           >
             Set
           </Button>
 
+          <br></br>
+          <br></br>
+          <Header as='h3'>Check Asset Price</Header>
+          <Button
+            onClick={() => checkPrice()}
+          >
+            Check Price
+          </Button>
+          <br></br>
+          {(price == '') ?
+            null :
+            price
+          }
+          <br></br>
+          <br></br>
         </Grid.Column>
       </Grid>
     </Container>
