@@ -1,9 +1,9 @@
 # EthDenver2022 Live Event Submission
 ## Chainlink Keeper Oracle Implementation
 
-The goal of this project is to implement a possible solution to the oracle problem SmartPiggies has suffered for far too long, locking settlement prices to maturity of bilateral risk transfer agreements.
+The aim of this project is to solve price settlement locking for long dated bilateral risk transfer agreements. The project provides an interface to launch oracle resolvers that interoperate with the Chainlink Keepers network to schedule price reconciliation for future dated bilateral risk transfer agreements, which execute similar to traditional financial options, where by guaranteeing price resolution upon the maturity of the agreement. In this way, spot price information can be used to settle agreements between counterparties in a trustless way, and lock the settlement price to the expiration timestamp.
 
-*Problem*: 
+*Problem*:
 
 When a new piggy is created, how can a settlement price be locked to the expiry date of the piggy? Ideally we would like access to historical price data, which is currently too expensive (and cumbersome) to access.
 
@@ -18,3 +18,6 @@ If the price resolvers use a Chainlink keeper to schedule a future callback to r
 ![Diagram](./media/Resolver_Diagram_v1.jpg)
 
 In the above diagram the SmartPiggies smart contract will register with a resolver. This resolver with then register a keeper request with the proxy. The keeper network will check this proxy to determine if there is any work that needs to be executed, i.e. a price that needs to be resolved. If any piggies have recently expired, the keeper will execute the price resolution functionality in the proxy, which will then return the price to the SmartPiggies contract for settlement.
+
+*Video Demo*
+[Video](https://vimeo.com/679048334)
